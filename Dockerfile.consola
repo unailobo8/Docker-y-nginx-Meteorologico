@@ -1,0 +1,21 @@
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
+WORKDIR /app
+EXPOSE 4000
+
+ENV ASPNETCORE_URLS=http://+:4000
+
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+WORKDIR /src
+COPY ["Cliente_Http/Cliente Http.csproj", "Cliente_Http/"]
+RUN dotnet restore "Cliente_Http\Cliente Http.csproj"
+COPY . .
+WORKDIR "/src/Cliente_Http/"
+RUN dotnet build "Cliente Http.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "Cliente Http.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Cliente Http.dll"]

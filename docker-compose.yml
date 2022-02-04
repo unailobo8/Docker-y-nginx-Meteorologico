@@ -1,0 +1,32 @@
+version: "3.4"
+services:
+  proxy:
+    image: nginx
+    ports:
+      - 80:80
+    volumes:
+      - .\nginx\nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - Proyecto
+
+  apibaliza:
+    image: proyecto_apibaliza
+    build:
+      context: .
+      dockerfile: Dockerfile.baliza
+    restart: always
+    ports:
+      - 5000:5000
+    networks:
+      - Proyecto
+
+  apiconsola:
+    image: proyecto_apiconsola
+    build:
+      context: .
+      dockerfile: Dockerfile.consola
+    restart: always
+    networks:
+      - Proyecto
+networks:
+  Proyecto:
